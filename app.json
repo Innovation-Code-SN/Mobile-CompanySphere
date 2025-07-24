@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "ICCompanySphere",
+    "slug": "ICCompanySphere",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1565C0"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.innovcode.companysphere",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cette app utilise l'appareil photo pour scanner les QR codes et prendre des photos de profil.",
+        "NSPhotoLibraryUsageDescription": "Cette app accède à vos photos pour sélectionner des images de profil.",
+        "NSContactsUsageDescription": "Cette app peut accéder à vos contacts pour faciliter la communication.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1565C0"
+      },
+      "package": "com.innovcode.companysphere",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-image-picker",
+      "expo-contacts"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2149c260-977b-43c6-812d-b065502c72b8"
+      }
+    }
+  }
+}
