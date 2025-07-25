@@ -26,10 +26,13 @@ jobs:
       - name: 🏗 Setup EAS CLI
         run: npm install -g eas-cli
 
-      - name: 🚀 Build Android APK
-        run: eas build --platform android --non-interactive --profile production
+      - name: 🔐 EAS Login
+        run: eas login --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Build Android APK
+        run: eas build --platform android --non-interactive --profile production
 
   build-and-deploy-web:
     name: Build and Deploy to Netlify
