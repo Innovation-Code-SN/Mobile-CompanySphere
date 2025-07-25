@@ -20,15 +20,16 @@ jobs:
           node-version: 18.x
           cache: npm
 
-      - name: 🏗 Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: 🏗 Setup EAS CLI
+        run: npm install -g eas-cli
+
+      - name: 🔐 EAS Login
+        run: eas login --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🚀 Build Android APK
         run: eas build --platform android --non-interactive --profile production
@@ -45,12 +46,6 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-
-      - name: 🏗 Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Install dependencies
         run: npm ci
