@@ -1,4 +1,4 @@
-// EmployeeDetailScreen.tsx - Écran de détails avec photos
+// EmployeeDetailScreen.tsx - CORRECTION DES HOOKS
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -39,6 +39,13 @@ const EmployeeDetailScreen: React.FC<EmployeeDetailScreenProps> = ({
     const [refreshing, setRefreshing] = useState(false);
     const [imageError, setImageError] = useState(false);
 
+    // ✅ CORRECTION : Déplacer useEffect AVANT le return conditionnel
+    useEffect(() => {
+        if (employee?.id) {
+            setImageError(false);
+        }
+    }, [employee?.id]);
+
     const statusConfig = {
         ACTIF: {
             color: '#28a745',
@@ -67,6 +74,7 @@ const EmployeeDetailScreen: React.FC<EmployeeDetailScreenProps> = ({
         }
     };
 
+    // ✅ APRÈS tous les Hooks, on peut faire le return conditionnel
     if (!employee) return null;
 
     // 📸 Fonction pour obtenir l'URL de la photo
@@ -80,11 +88,6 @@ const EmployeeDetailScreen: React.FC<EmployeeDetailScreenProps> = ({
         const lastName = employee.nom || '';
         return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase() || 'U';
     };
-
-    // Reset imageError when employee changes
-    useEffect(() => {
-        setImageError(false);
-    }, [employee.id]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -434,7 +437,7 @@ const EmployeeDetailScreen: React.FC<EmployeeDetailScreenProps> = ({
     );
 };
 
-// Composants auxiliaires
+// Composants auxiliaires restent inchangés...
 const TabButton: React.FC<{
     title: string;
     icon: string;
@@ -573,7 +576,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    // 📸 Nouveaux styles pour la photo
     employeePhoto: {
         width: '100%',
         height: '100%',
