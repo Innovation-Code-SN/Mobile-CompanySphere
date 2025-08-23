@@ -1,4 +1,3 @@
-// src/navigations/MainNavigator.tsx - VERSION CORRIGÉE
 import React from 'react';
 import { Alert } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,22 +14,35 @@ import DocumentsScreen from '../screens/documents/DocumentsScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import FAQScreen from '../screens/faq/FAQScreen';
 
-// 🔧 CORRECTION: Import des écrans Teams
+// Écrans Teams
 import TeamsListScreen from '../screens/teams/TeamsListScreen';
 import { TeamDetailScreen } from '../screens/teams/TeamDetailScreen';
+
+// 🔧 CORRECTION: Import des écrans Meetings
+import MeetingsScreen from '../screens/meetings/MeetingsScreen';
 
 // Header
 import { Header } from '../components/ui/Header';
 
 // Types
-import { MainTabParamList, ProfileStackParamList, TeamsStackParamList } from './types';
+import { MainTabParamList, ProfileStackParamList, TeamsStackParamList, MeetingsStackParamList } from './types';
 import { useAuth } from '@/context/AuthContext';
 import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
+import CalendarScreen from '@/screens/meetings/MeetingCalendarScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-// 🔧 CORRECTION: Stack typé pour Teams
 const TeamsStackNavigator = createStackNavigator<TeamsStackParamList>();
+const MeetingsStackNavigator = createStackNavigator<MeetingsStackParamList>(); // 🔧 Ajouté
+const ProfileStackNavigator = createStackNavigator<ProfileStackParamList>();
 const Stack = createStackNavigator();
+
+// 🔧 CORRECTION: Stack pour les réunions avec le bon navigateur typé
+const MeetingsStack = () => (
+    <MeetingsStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+        <MeetingsStackNavigator.Screen name="MeetingsList" component={MeetingsScreen} />
+        <MeetingsStackNavigator.Screen name="MeetingsCalendar" component={CalendarScreen} />
+    </MeetingsStackNavigator.Navigator>
+);
 
 // Stack navigators existants
 const DashboardStack = () => (
@@ -57,21 +69,16 @@ const DocumentsStack = () => (
     </Stack.Navigator>
 );
 
-// 🔧 CORRECTION: TeamsStack avec le bon navigateur typé
 const TeamsStack = () => (
     <TeamsStackNavigator.Navigator screenOptions={{ headerShown: false }}>
-        {/* 🔧 Écran principal des équipes */}
         <TeamsStackNavigator.Screen
             name="TeamsHome"
             component={TeamsListScreen}
         />
-
-        {/* 🔧 Écran de détail d'équipe avec header personnalisé */}
         <TeamsStackNavigator.Screen
             name="TeamDetail"
             component={TeamDetailScreen}
             options={({ route }) => ({
-                // 🔧 Accès sécurisé aux paramètres avec le bon type
                 title: route.params?.teamName || 'Détails de l\'équipe',
                 headerShown: true,
                 headerStyle: {
@@ -86,9 +93,6 @@ const TeamsStack = () => (
     </TeamsStackNavigator.Navigator>
 );
 
-const ProfileStackNavigator = createStackNavigator<ProfileStackParamList>();
-
-// Créez le ProfileStack
 const ProfileStack = () => (
     <ProfileStackNavigator.Navigator screenOptions={{ headerShown: false }}>
         <ProfileStackNavigator.Screen
@@ -107,7 +111,6 @@ const FAQStack = () => (
         <Stack.Screen name="FAQHome" component={FAQScreen} />
     </Stack.Navigator>
 );
-
 
 export const MainNavigator: React.FC = () => {
     const { logout } = useAuth();
@@ -138,9 +141,11 @@ export const MainNavigator: React.FC = () => {
                         case 'Services':
                             iconName = focused ? 'business' : 'business-outline';
                             break;
-                        // 🆕 Icône pour les équipes
                         case 'Teams':
                             iconName = focused ? 'people-circle' : 'people-circle-outline';
+                            break;
+                        case 'Meetings': // 🔧 Un seul case pour Meetings
+                            iconName = focused ? 'calendar' : 'calendar-outline';
                             break;
                         case 'Documents':
                             iconName = focused ? 'document-text' : 'document-text-outline';
@@ -148,9 +153,9 @@ export const MainNavigator: React.FC = () => {
                         case 'FAQ':
                             iconName = focused ? 'help-circle' : 'help-circle-outline';
                             break;
-                        case 'Profile':
-                            iconName = focused ? 'person' : 'person-outline';
-                            break;
+                        // case 'Profile':
+                        //     iconName = focused ? 'person' : 'person-outline';
+                        //     break;
                         default:
                             iconName = 'help-outline';
                     }
@@ -172,10 +177,10 @@ export const MainNavigator: React.FC = () => {
                         Employees: 'Employés',
                         Services: 'Services',
                         Teams: 'Équipes',
+                        Meetings: 'Mes Réunions', // 🔧 Ajouté le titre manquant
                         Documents: 'Documents',
                         FAQ: 'Questions fréquentes',
                         Profile: 'Mon Profil',
-
                     };
 
                     return (
@@ -250,11 +255,16 @@ export const MainNavigator: React.FC = () => {
                 component={ServicesStack}
                 options={{ title: 'Services' }}
             />
-            {/* 🆕 Nouvel onglet Teams */}
             <Tab.Screen
                 name="Teams"
                 component={TeamsStack}
                 options={{ title: 'Équipes' }}
+            />
+            {/* 🔧 UN SEUL ONGLET MEETINGS - SUPPRIMÉ LA DUPLICATION */}
+            <Tab.Screen
+                name="Meetings"
+                component={MeetingsStack}
+                options={{ title: 'Réunions' }}
             />
             <Tab.Screen
                 name="Documents"
@@ -266,11 +276,11 @@ export const MainNavigator: React.FC = () => {
                 component={FAQStack}
                 options={{ title: 'FAQ' }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="Profile"
                 component={ProfileStack}
                 options={{ title: 'Profil' }}
-            />
+            /> */}
         </Tab.Navigator>
     );
 };

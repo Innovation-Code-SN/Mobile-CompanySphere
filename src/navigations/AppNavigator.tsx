@@ -1,4 +1,4 @@
-// src/navigations/AppNavigator.tsx - VERSION CORRIGÉE
+// src/navigations/AppNavigator.tsx - VERSION CORRIGÉE SANS ERREURS TYPESCRIPT
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -19,15 +19,38 @@ import TeamsListScreen from '@/screens/teams/TeamsListScreen';
 import { TeamDetailScreen } from '@/screens/teams/TeamDetailScreen';
 import { ProfileStackNavigator } from './ProfileStackNavigator';
 
+// 🆕 AJOUTER LES IMPORTS MEETINGS
+import MeetingsScreen from '../screens/meetings/MeetingsScreen';
+import CalendarScreen from '@/screens/meetings/MeetingCalendarScreen';
 
-// Types de navigation
+// 🔧 CORRECTION DES TYPES
+// Types pour les onglets principaux
+export type MainTabParamList = {
+    Dashboard: undefined;
+    Employees: undefined;
+    Services: undefined;
+    Teams: undefined;
+    Meetings: undefined; // 🆕 Ajouter Meetings
+    Documents: undefined;
+    FAQ: undefined;
+    Profile: undefined;
+};
+
+// Types pour les stacks individuels
+export type MeetingsStackParamList = {
+    MeetingsList: undefined;
+    MeetingsCalendar: undefined; // 🔧 Nom correct
+};
+
+// Types pour la navigation principale
 export type RootStackParamList = {
     Auth: undefined;
     Main: undefined;
     Dashboard: undefined;
     Employees: undefined;
     Services: undefined;
-    Teams: undefined; // 🆕 Ajout du type Teams
+    Teams: undefined;
+    Meetings: undefined;
     FAQ: undefined;
     Documents: undefined;
     Profile: undefined;
@@ -37,10 +60,15 @@ export type RootStackParamList = {
     FolderDetail: { folder: any };
     TeamsList: undefined;
     TeamDetail: { teamId: string; teamName?: string };
+    // 🔧 Ajouter les routes du MeetingsStack
+    MeetingsList: undefined;
+    MeetingsCalendar: undefined;
 };
 
+// 🔧 CRÉER LES NAVIGATEURS AVEC LES BONS TYPES
 const Stack = createStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+const MeetingsStackNavigator = createStackNavigator<MeetingsStackParamList>();
 
 // Couleurs du thème
 const Theme = {
@@ -62,22 +90,43 @@ function TeamsStack() {
     return (
         <Stack.Navigator initialRouteName="TeamsList">
             <Stack.Screen name="TeamsList" component={TeamsListScreen} options={{
-                headerShown: false, // Masque complètement le header
-                title: 'Équipes' // Ou changez le titre si vous gardez le header
+                headerShown: false,
+                title: 'Équipes'
             }} />
             <Stack.Screen name="TeamDetail" component={TeamDetailScreen} />
         </Stack.Navigator>
     );
 }
 
+// 🔧 MEETINGS STACK AVEC LES BONS TYPES
+function MeetingsStack() {
+    console.log('🔧 MeetingsStack créé dans AppNavigator');
+    return (
+        <MeetingsStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+            <MeetingsStackNavigator.Screen 
+                name="MeetingsList" 
+                component={MeetingsScreen}
+            />
+            <MeetingsStackNavigator.Screen 
+                name="MeetingsCalendar" 
+                component={CalendarScreen}
+            />
+        </MeetingsStackNavigator.Navigator>
+    );
+}
+
 // Navigation par onglets
 function MainTabNavigator() {
+    console.log('🔧 MainTabNavigator rendu dans AppNavigator');
+    
     return (
         <Tab.Navigator
             initialRouteName="Dashboard"
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
-                    let iconName: any;
+                    let iconName: keyof typeof Ionicons.glyphMap;
+
+                    console.log('🔍 Configuration icône pour:', route.name);
 
                     switch (route.name) {
                         case 'Dashboard':
@@ -92,13 +141,21 @@ function MainTabNavigator() {
                         case 'Teams':
                             iconName = focused ? 'people-circle' : 'people-circle-outline';
                             break;
+                        case 'Meetings':
+                            console.log('✅ Icône Meetings configurée');
+                            iconName = focused ? 'calendar' : 'calendar-outline';
+                            break;
                         case 'Documents':
                             iconName = focused ? 'document-text' : 'document-text-outline';
+                            break;
+                        case 'FAQ':
+                            iconName = focused ? 'help-circle' : 'help-circle-outline';
                             break;
                         case 'Profile':
                             iconName = focused ? 'person' : 'person-outline';
                             break;
                         default:
+                            console.log('⚠️ Route non reconnue:', route.name);
                             iconName = 'help-outline';
                     }
 
@@ -133,8 +190,14 @@ function MainTabNavigator() {
             />
             <Tab.Screen
                 name="Teams"
-                component={TeamsStack} // 🆕 Utilisation de TeamsStack
-                options={{ title: 'Équipes', headerShown: false }}
+                component={TeamsStack}
+                options={{ title: 'Équipes' }}
+            />
+            {/* 🔧 ONGLET MEETINGS SANS tabBarOnPress QUI CAUSE L'ERREUR */}
+            <Tab.Screen
+                name="Meetings"
+                component={MeetingsStack}
+                options={{ title: 'Réunions' }}
             />
             <Tab.Screen
                 name="Documents"
@@ -142,31 +205,28 @@ function MainTabNavigator() {
                 options={{ title: 'Documents' }}
             />
             <Tab.Screen
-                name="Profile"
-                component={ProfileStackNavigator}
-                options={{ title: 'Profil' }}
-            />
-
-            <Tab.Screen
                 name="FAQ"
                 component={FAQScreen}
                 options={{ title: 'FAQ' }}
             />
+            {/* <Tab.Screen
+                name="Profile"
+                component={ProfileStackNavigator}
+                options={{ title: 'Profil' }}
+            /> */}
         </Tab.Navigator>
     );
 }
 
-// Navigation principale - NOUVELLE INTERFACE
+// Navigation principale
 interface AppNavigatorProps {
-    isAuthenticated: boolean; // ✅ Changé de initialAuthenticated à isAuthenticated
+    isAuthenticated: boolean;
 }
 
 export default function AppNavigator({ isAuthenticated }: AppNavigatorProps) {
-
-    // ✅ Log pour débogage
     useEffect(() => {
         console.log('🖥️ AppNavigator rendu avec isAuthenticated:', isAuthenticated);
-        console.log('🔀 Navigation vers:', isAuthenticated ? 'Main' : 'Auth');
+        console.log('🔀 Navigation vers:', isAuthenticated ? 'Main (avec Meetings)' : 'Auth');
     }, [isAuthenticated]);
 
     return (
@@ -174,11 +234,9 @@ export default function AppNavigator({ isAuthenticated }: AppNavigatorProps) {
             <Stack.Navigator
                 screenOptions={{
                     headerShown: false,
-                    // ✅ IMPORTANT : Réinitialiser la pile lors du changement d'état
                 }}
             >
                 {isAuthenticated ? (
-                    // ✅ Utilisateur connecté : Afficher l'app principale
                     <Stack.Screen
                         name="Main"
                         component={MainTabNavigator}
@@ -187,7 +245,6 @@ export default function AppNavigator({ isAuthenticated }: AppNavigatorProps) {
                         }}
                     />
                 ) : (
-                    // ✅ Utilisateur non connecté : Afficher l'écran de connexion
                     <Stack.Screen
                         name="Auth"
                         component={AuthNavigator}

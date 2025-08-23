@@ -279,6 +279,33 @@ export default function DashboardScreen({ navigation }: any) {
             gradient: ['#4A90E2', '#357ABD'], // Gradient FAQ spécial
             onPress: () => navigation.navigate('FAQ'),
         },
+        {
+    id: 'meetings',
+    title: 'Réunions',
+    icon: 'calendar',
+    gradient: [Colors.primaryDark, Colors.primary],
+    onPress: () => {
+        console.log('🎯 === BOUTON RÉUNIONS CLIQUÉ ===');
+        
+        // 🔍 ÉTAPE 1 : Vérifier que l'action est bien appelée
+        Alert.alert('Debug', 'Bouton Réunions cliqué !');
+        
+        // 🔍 ÉTAPE 2 : Vérifier la navigation disponible
+        console.log('🔍 Navigation state:', navigation.getState());
+        console.log('🔍 Routes disponibles:', navigation.getState().routeNames);
+        
+        // 🔍 ÉTAPE 3 : Essayer la navigation avec gestion d'erreur
+        try {
+            console.log('🚀 Tentative de navigation vers Meetings...');
+            navigation.navigate('Meetings');
+            console.log('✅ Navigation réussie');
+        } catch (error) {
+            console.error('❌ Erreur navigation:', error);
+            Alert.alert('Erreur Navigation', `Impossible de naviguer vers Meetings:`);
+        }
+    },
+}
+
     ];
 
     // 🎨 ACTIVITÉS AVEC COULEURS UNIFORMES
@@ -427,6 +454,9 @@ export default function DashboardScreen({ navigation }: any) {
                     </View>
                     <View style={styles.quickActionsRow}>
                         {quickActions.slice(2, 4).map(renderQuickActionCard)}
+                    </View>
+                    <View style={styles.quickActionsRow}>
+                        {quickActions.slice(4, 6).map(renderQuickActionCard)} {/* 🆕 TROISIÈME RANGÉE */}
                     </View>
                 </View>
 

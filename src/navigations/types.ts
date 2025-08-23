@@ -10,6 +10,7 @@ export type MainTabParamList = {
     Documents: undefined;
     FAQ: undefined;
     Teams: undefined;
+    Meetings: undefined; 
     Profile: undefined;
 
 
@@ -74,4 +75,9 @@ export type TeamsListScreenProps = {
 export type TeamDetailScreenProps = {
     navigation: StackNavigationProp<TeamsStackParamList, 'TeamDetail'>;
     route: RouteProp<TeamsStackParamList, 'TeamDetail'>;
+};
+
+export type MeetingsStackParamList = {
+  MeetingsList: undefined;
+  MeetingsCalendar: undefined;
 };
